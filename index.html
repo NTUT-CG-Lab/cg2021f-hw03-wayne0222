@@ -26,7 +26,7 @@
 	<script>
 		// 建構子 ScoreOutputer 接受一個字串，該字串為 csv 的檔案名稱
 		// 以下面範例，檔名就為 "109598105(總分: 6).csv"
-		var so = new ScoreOutputer("109598105");
+		var so = new ScoreOutputer("110598091");
 		so.installCSS(function () {
 			// 安裝 bootstrap 的 css，如果在 html 上方引用 bootstrap 5.1.1 的話就不用使用 installCSS ，注意一定要 bootstrap css 5.1.1 版
 			// installCSS 接收一個 callback 當作參數，作為成功安裝 bootstrap css 的回呼函式
@@ -84,18 +84,24 @@
 		import { MMDAnimationHelper } from './jsm/animation/MMDAnimationHelper.js';
 
 		let scene, renderer, effect;
-		let helper;
+		let mesh, helper, group;
 		let SCREEN_WIDTH = window.innerWidth;
 		let SCREEN_HEIGHT = window.innerHeight;
 		let aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
 		let frustumSize = 3.25;
 		let camera, camera2, camera3, camera4, camera5;
 
-		let n,m;
+		let n, m, isLeft, line, mouseWorld;
 		let modelFile = new Array(3);
-		let mesh = new Array(4);
 		let height = new Array(3);
-		let fixed = new Array(8);
+		let renderNumder = new Array(4);
+		let leftEye = new Array(3);
+		let rightEye = new Array(3);
+		let fixed;
+		for ( let i = 0; i <= 2; i ++) {
+			leftEye[i] = new Array(4);
+			rightEye[i] = new Array(4);
+		}
 
 		Ammo().then(function (AmmoLib) {
 
@@ -112,7 +118,6 @@
 
 				const percentComplete = xhr.loaded / xhr.total * 100;
 				console.log(Math.round(percentComplete, 2) + '% downloaded');
-
 			}
 		}
 
@@ -120,7 +125,7 @@
 			mouseWorld = new THREE.Vector3();
 			const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
 			mouseWorld.set(
-				((e.clientX - left + 1) / width) * 2 - 1,
+				((e.clientX - left + 1) / (width / 2)) * 2 - 1,
 				-((e.clientY - top + 1) / height) * 2 + 1,
 				(camera.near + camera.far) / (camera.near - camera.far),
 			);
@@ -130,29 +135,100 @@
 
 		function onClick() {
 
-			fixed[m] == false;
-			//console.log("L");
+			fixed = false;
+			console.log("L");
+
+			//console.log("X = " + mouseWorld.x);
+			//console.log("Y = " + mouseWorld.y);
 
 		}
 
 		function onContextmenu(e) {
 
 			e.preventDefault();
-			fixed[m] == true;
-			//console.log("R");
-
+			fixed = true;
+			console.log("R");
+			
 		}
 
 		function onkeyDown(e) {
 
-			if(e.ketCode === 49) {
-				m --;
-				if(m == 8) m = 0;
+			if(e.keyCode === 49) {
+
+				console.log("1");
+				//allRender = false;
+				if(isLeft == true) {
+					isLeft = false;
+					camera.position.x = 0.525;
+					line.position.x = 0.525;
+					//renderNumder[m] = true;
+					m --;
+					if(m <= -1) {
+						m = 3;
+					}
+				}
+				else {
+					isLeft = true;
+					camera.position.x = -0.525;
+					line.position.x = -0.525;
+					//
+				}
+				
 			}
 
 			else if(e.keyCode === 50) {
-				m ++;
-				if(m == -1) m = 7;
+
+				console.log("2");
+				//allRender = false;
+				if(isLeft == false) {
+					isLeft = true;
+					camera.position.x = -0.525;
+					line.position.x = -0.525;
+					//renderNumder[m] = true;
+					m ++;
+					if(m >= 4) {
+						m = 0;
+					}
+				}
+				else {
+					isLeft = false;
+					camera.position.x = 0.525;
+					line.position.x = 0.525;
+					//
+				}
+				
+			}
+
+			else if(e.keyCode === 81) {
+
+				if(isLeft == true) {
+					if(m == 0 || m == 1) {
+						rightEye[n][m].x = leftEye[n][m].x;
+						rightEye[n][m].y = leftEye[n][m].y;
+						isLeft = false;
+						camera.position.x = 0.525;
+						line.position.x = 0.525;
+					}
+					else if(m == 2) {
+						rightEye[n][m + 1].x = leftEye[n][m].x;
+						rightEye[n][m + 1].y = -leftEye[n][m].y;
+						isLeft = false;
+						camera.position.x = 0.525;
+						line.position.x = 0.525;
+						m ++;
+						return;
+					}
+					if(m == 3) {
+						rightEye[n][m - 1].x = leftEye[n][m].x;
+						rightEye[n][m - 1].y = -leftEye[n][m].y;
+						isLeft = false;
+						camera.position.x = 0.525;
+						line.position.x = 0.525;
+						m --;
+						return;
+					}
+				}
+
 			}
 
 			else if(e.keyCode === 68) {
@@ -169,25 +245,19 @@
 		}
 
 		function modelChange() {
-
 			
-			const loader = new Array(4);
+			scene.remove(mesh);
+			const loader = new MMDLoader();
 
-			for (let i = 0; i <= 3; i ++) {
+			loader.load(modelFile[n], function (object) {
 
-				scene.remove(mesh[i]);
-				loader[i] = new MMDLoader();
-				loader[i].load(modelFile[n], function (object) {
+			mesh = object;
+			mesh.position.y = - 10;
 
-				mesh[i] = object;
-				mesh[i].position.x = - 22.5 + i * 15;
-				mesh[i].position.y = - 10;
+			scene.add(mesh);
 
-				scene.add(mesh[i]);
+			}, onProgress, null);
 
-				}, onProgress, null);
-
-			}
 
 			camera.position.y = height[n];
 
@@ -199,10 +269,17 @@
 
 			camera5.position.y = height[n];
 
+			//allRender = true;
+			m = 0;
+			isLeft = true;
+			camera.position.x = -0.525;
+			line.position.x = -0.525;
 		}
 
 		function init() {
 
+			isLeft = true;
+			//allRender = true;
 			n = 0;
 			m = 0;
 			height[0] = 8.25;
@@ -211,11 +288,26 @@
 			modelFile[0] = 'models/mmd/kizunaai/kizunaai.pmx';
 			modelFile[1] = 'models/mmd/『天宮こころ(Kokoro Amamiya)』/『天宮こころ(Kokoro Amamiya)』.pmx'
 			modelFile[2] = 'models/mmd/るいのれ式物述有栖_配布用フォルダ/物述有栖.pmx';
-			for ( let i = 0; i <= 7; i ++) {
-
-				fixed[i] = true;
-
+			for ( let i = 0; i <= 3; i ++) {
+				renderNumder[i] = false;
 			}
+			for ( let i = 0; i <= 2; i ++) {
+				for ( let j = 0; j <= 3; j ++) {
+					leftEye[i][j] = new THREE.Vector2( 0, 0 );
+					rightEye[i][j] = new THREE.Vector2( 0, 0 );
+				}
+			}
+			fixed = true;
+			group = new THREE.Group();
+
+			const material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+			const points = [];
+			points.push( new THREE.Vector3( 0, -10, 20 ) );
+			points.push( new THREE.Vector3( 0, 10, 20 ) );
+			const geometry = new THREE.BufferGeometry().setFromPoints( points );
+			line = new THREE.Line( geometry, material );
+			line.position.x = -0.525;
+
 
 			const container = document.createElement('div');
 			document.body.appendChild(container);
@@ -226,23 +318,19 @@
 			camera5 = new THREE.OrthographicCamera(0.25 * frustumSize * aspect / - 2, 0.25 * frustumSize * aspect / 2, 0.5 * frustumSize / 2, 0.5 * frustumSize / - 2, 0.1, 1000);
 
 			camera.position.z = 30;
-			camera.position.x = -23.1;
+			camera.position.x = -0.525;
 			camera.position.y = height[n];
 
 			camera2.position.z = 30;
-			camera2.position.x = -22.5;
 			camera2.position.y = height[n];
 
 			camera3.position.z = 30;
-			camera3.position.x = -7.5;
 			camera3.position.y = height[n];
 
 			camera4.position.z = 30;
-			camera4.position.x = 7.5;
 			camera4.position.y = height[n];
 
 			camera5.position.z = 30;
-			camera5.position.x = 22.5;
 			camera5.position.y = height[n];
 
 			// scene
@@ -267,27 +355,23 @@
 			// model
 
 			helper = new MMDAnimationHelper();
-			const loader = new Array(4);
+			const loader = new MMDLoader();
 
-			for (let i = 0; i <= 3; i ++) {
+			loader.load(modelFile[n], function (object) {
 
-				loader[i] = new MMDLoader();
-				loader[i].load(modelFile[n], function (object) {
+			mesh = object;
+			mesh.position.y = - 10;
 
-				mesh[i] = object;
-				mesh[i].position.x = - 22.5 + i * 15;
-				mesh[i].position.y = - 10;
+			scene.add(mesh);
 
-				scene.add(mesh[i]);
-
-				}, onProgress, null);
-
-			}
+			}, onProgress, null);
 
 			//
 
+			document.body.addEventListener('mousemove', getPosition, false);
 			document.addEventListener( 'keydown', onkeyDown, false );
-			document.addEventListener( 'click', onClick, false );			document.addEventListener( 'contextmenu', onContextmenu, false );
+			document.addEventListener( 'click', onClick, false );
+			document.addEventListener( 'contextmenu', onContextmenu, false );
 
 			//
 
@@ -340,28 +424,153 @@
 		function animate() {
 
 			requestAnimationFrame(animate);
-			render();
+			effect.clear();
+
+			render_0();
+			render_1();
+			render_2();
+			render_3();
 
 		}
 
-		function render() {
+		function render_0() {
 
-			effect.clear();
+			if(m == 0) {
+				if(isLeft == true && fixed == false) {
+					leftEye[n][m].x = (mouseWorld.y - height[n]) * -0.35;
+					leftEye[n][m].y = (mouseWorld.x + 0.525) * 0.5;
+				}
+				else if(isLeft == false && fixed == false) {
+					rightEye[n][m].x = (mouseWorld.y - height[n]) * -0.35;
+					rightEye[n][m].y = (mouseWorld.x - 0.525) * 0.5;
+				}
+			}
+			
+			mesh.skeleton.bones[88].rotation.x = leftEye[n][0].x;
+			mesh.skeleton.bones[88].rotation.y = leftEye[n][0].y;
+			mesh.skeleton.bones[86].rotation.x = rightEye[n][0].x;
+			mesh.skeleton.bones[86].rotation.y = rightEye[n][0].y;
 
-			effect.setViewport(0, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT);
-			effect.render(scene, camera);
-
+			if(m == 0) {
+				scene.add(line);
+				effect.setViewport(0, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT);
+				effect.render(scene, camera);
+			}
 			effect.setViewport(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2);
 			effect.render(scene, camera2);
+			mesh.skeleton.bones[88].rotation.x = 0;
+			mesh.skeleton.bones[88].rotation.y = 0;
+			mesh.skeleton.bones[86].rotation.x = 0;
+			mesh.skeleton.bones[86].rotation.y = 0;
+			if(m == 0) {
+				scene.remove(line);
+			}
 
+		}
+
+		function render_1() {
+
+			if(m == 1) {
+				if(isLeft == true && fixed == false) {
+					leftEye[n][m].x = (mouseWorld.y - height[n]) * -0.35;
+					leftEye[n][m].y = (mouseWorld.x + 0.525) * 0.5;
+				}
+				else if(isLeft == false && fixed == false) {
+					rightEye[n][m].x = (mouseWorld.y - height[n]) * -0.35;
+					rightEye[n][m].y = (mouseWorld.x - 0.525) * 0.5;
+				}
+			}
+			
+			mesh.skeleton.bones[88].rotation.x = leftEye[n][1].x;
+			mesh.skeleton.bones[88].rotation.y = leftEye[n][1].y;
+			mesh.skeleton.bones[86].rotation.x = rightEye[n][1].x;
+			mesh.skeleton.bones[86].rotation.y = rightEye[n][1].y;
+
+			if(m == 1) {
+				scene.add(line);
+				effect.setViewport(0, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT);
+				effect.render(scene, camera);
+			}
 			effect.setViewport(SCREEN_WIDTH / 2 + SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2);
 			effect.render(scene, camera3);
+			mesh.skeleton.bones[88].rotation.x = 0;
+			mesh.skeleton.bones[88].rotation.y = 0;
+			mesh.skeleton.bones[86].rotation.x = 0;
+			mesh.skeleton.bones[86].rotation.y = 0;
+			if(m == 1) {
+				scene.remove(line);
+			}
 
+		}
+
+		function render_2() {
+
+			if(m == 2) {
+				if(isLeft == true && fixed == false) {
+					leftEye[n][m].x = (mouseWorld.y - height[n]) * -0.35;
+					leftEye[n][m].y = (mouseWorld.x + 0.525) * 0.5;
+				}
+				else if(isLeft == false && fixed == false) {
+					rightEye[n][m].x = (mouseWorld.y - height[n]) * -0.35;
+					rightEye[n][m].y = (mouseWorld.x - 0.525) * 0.5;
+				}
+			}
+			
+			mesh.skeleton.bones[88].rotation.x = leftEye[n][2].x;
+			mesh.skeleton.bones[88].rotation.y = leftEye[n][2].y;
+			mesh.skeleton.bones[86].rotation.x = rightEye[n][2].x;
+			mesh.skeleton.bones[86].rotation.y = rightEye[n][2].y;
+
+			if(m == 2) {
+				scene.add(line);
+				effect.setViewport(0, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT);
+				effect.render(scene, camera);
+			}
 			effect.setViewport(SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2);
 			effect.render(scene, camera4);
+			mesh.skeleton.bones[88].rotation.x = 0;
+			mesh.skeleton.bones[88].rotation.y = 0;
+			mesh.skeleton.bones[86].rotation.x = 0;
+			mesh.skeleton.bones[86].rotation.y = 0;
+			if(m == 2) {
+				scene.remove(line);
+			}
 
+		}
+
+		function render_3() {
+
+			if(m == 3) {
+				if(isLeft == true && fixed == false) {
+					leftEye[n][m].x = (mouseWorld.y - height[n]) * -0.35;
+					leftEye[n][m].y = (mouseWorld.x + 0.525) * 0.5;
+				}
+				else if(isLeft == false && fixed == false) {
+					rightEye[n][m].x = (mouseWorld.y - height[n]) * -0.35;
+					rightEye[n][m].y = (mouseWorld.x - 0.525) * 0.5;
+				}
+			}
+			
+			mesh.skeleton.bones[88].rotation.x = leftEye[n][3].x;
+			mesh.skeleton.bones[88].rotation.y = leftEye[n][3].y;
+			mesh.skeleton.bones[86].rotation.x = rightEye[n][3].x;
+			mesh.skeleton.bones[86].rotation.y = rightEye[n][3].y;
+
+			if(m == 3) {
+				scene.add(line);
+				effect.setViewport(0, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT);
+				effect.render(scene, camera);
+			}
 			effect.setViewport(SCREEN_WIDTH / 2 + SCREEN_WIDTH / 4, 0, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2);
 			effect.render(scene, camera5);
+			mesh.skeleton.bones[88].rotation.x = 0;
+			mesh.skeleton.bones[88].rotation.y = 0;
+			mesh.skeleton.bones[86].rotation.x = 0;
+			mesh.skeleton.bones[86].rotation.y = 0;
+			if(m == 3) {
+				scene.remove(line);
+			}
+
 		}
 	</script>
 

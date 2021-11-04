@@ -21,6 +21,7 @@
 <body>
 	<div id="info"></div>
 
+	<script type="text/javascript" src="data.json"></script>
 	<script src="js/libs/ammo.wasm.js"></script>
 	<script src="scoreoutputer.min.js"></script>
 	<script>
@@ -97,11 +98,14 @@
 		let renderNumder = new Array(4);
 		let leftEye = new Array(3);
 		let rightEye = new Array(3);
+		let modelEyes = new Array(3);
 		let fixed;
 		for ( let i = 0; i <= 2; i ++) {
 			leftEye[i] = new Array(4);
 			rightEye[i] = new Array(4);
+			modelEyes[i] = new Array(2);
 		}
+		let object = [];
 
 		Ammo().then(function (AmmoLib) {
 
@@ -289,6 +293,12 @@
 			modelFile[0] = 'models/mmd/kizunaai/kizunaai.pmx';
 			modelFile[1] = 'models/mmd/『天宮こころ(Kokoro Amamiya)』/『天宮こころ(Kokoro Amamiya)』.pmx'
 			modelFile[2] = 'models/mmd/るいのれ式物述有栖_配布用フォルダ/物述有栖.pmx';
+			modelEyes[0][0] = 88;
+			modelEyes[0][1] = 86;
+			modelEyes[1][0] = 51;
+			modelEyes[1][1] = 49;
+			modelEyes[2][0] = 13;
+			modelEyes[2][1] = 11;
 			for ( let i = 0; i <= 3; i ++) {
 				renderNumder[i] = false;
 			}
@@ -299,7 +309,19 @@
 				}
 			}
 			fixed = true;
+
+
 			group = new THREE.Group();
+
+
+			/*let address = new XMLHttpRequest();
+			address.open('GET', 'data.json', true);
+			address.onload = function () {
+				object = JSON.parse(this.responseText);
+				console.log(object[0].name);
+}			}
+			object = JSON.parse();*/
+
 
 			const material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
 			const points = [];
@@ -447,10 +469,10 @@
 				}
 			}
 			
-			mesh.skeleton.bones[88].rotation.x = leftEye[n][0].x;
-			mesh.skeleton.bones[88].rotation.y = leftEye[n][0].y;
-			mesh.skeleton.bones[86].rotation.x = rightEye[n][0].x;
-			mesh.skeleton.bones[86].rotation.y = rightEye[n][0].y;
+			mesh.skeleton.bones[modelEyes[n][0]].rotation.x = leftEye[n][0].x;
+			mesh.skeleton.bones[modelEyes[n][0]].rotation.y = leftEye[n][0].y;
+			mesh.skeleton.bones[modelEyes[n][1]].rotation.x = rightEye[n][0].x;
+			mesh.skeleton.bones[modelEyes[n][1]].rotation.y = rightEye[n][0].y;
 
 			if(m == 0) {
 				scene.add(line);
@@ -459,10 +481,10 @@
 			}
 			effect.setViewport(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2);
 			effect.render(scene, camera2);
-			mesh.skeleton.bones[88].rotation.x = 0;
-			mesh.skeleton.bones[88].rotation.y = 0;
-			mesh.skeleton.bones[86].rotation.x = 0;
-			mesh.skeleton.bones[86].rotation.y = 0;
+			mesh.skeleton.bones[modelEyes[n][0]].rotation.x = 0;
+			mesh.skeleton.bones[modelEyes[n][0]].rotation.y = 0;
+			mesh.skeleton.bones[modelEyes[n][1]].rotation.x = 0;
+			mesh.skeleton.bones[modelEyes[n][1]].rotation.y = 0;
 			if(m == 0) {
 				scene.remove(line);
 			}
@@ -482,10 +504,10 @@
 				}
 			}
 			
-			mesh.skeleton.bones[88].rotation.x = leftEye[n][1].x;
-			mesh.skeleton.bones[88].rotation.y = leftEye[n][1].y;
-			mesh.skeleton.bones[86].rotation.x = rightEye[n][1].x;
-			mesh.skeleton.bones[86].rotation.y = rightEye[n][1].y;
+			mesh.skeleton.bones[modelEyes[n][0]].rotation.x = leftEye[n][1].x;
+			mesh.skeleton.bones[modelEyes[n][0]].rotation.y = leftEye[n][1].y;
+			mesh.skeleton.bones[modelEyes[n][1]].rotation.x = rightEye[n][1].x;
+			mesh.skeleton.bones[modelEyes[n][1]].rotation.y = rightEye[n][1].y;
 
 			if(m == 1) {
 				scene.add(line);
@@ -494,10 +516,10 @@
 			}
 			effect.setViewport(SCREEN_WIDTH / 2 + SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2);
 			effect.render(scene, camera3);
-			mesh.skeleton.bones[88].rotation.x = 0;
-			mesh.skeleton.bones[88].rotation.y = 0;
-			mesh.skeleton.bones[86].rotation.x = 0;
-			mesh.skeleton.bones[86].rotation.y = 0;
+			mesh.skeleton.bones[modelEyes[n][0]].rotation.x = 0;
+			mesh.skeleton.bones[modelEyes[n][0]].rotation.y = 0;
+			mesh.skeleton.bones[modelEyes[n][1]].rotation.x = 0;
+			mesh.skeleton.bones[modelEyes[n][1]].rotation.y = 0;
 			if(m == 1) {
 				scene.remove(line);
 			}
@@ -517,10 +539,10 @@
 				}
 			}
 			
-			mesh.skeleton.bones[88].rotation.x = leftEye[n][2].x;
-			mesh.skeleton.bones[88].rotation.y = leftEye[n][2].y;
-			mesh.skeleton.bones[86].rotation.x = rightEye[n][2].x;
-			mesh.skeleton.bones[86].rotation.y = rightEye[n][2].y;
+			mesh.skeleton.bones[modelEyes[n][0]].rotation.x = leftEye[n][2].x;
+			mesh.skeleton.bones[modelEyes[n][0]].rotation.y = leftEye[n][2].y;
+			mesh.skeleton.bones[modelEyes[n][1]].rotation.x = rightEye[n][2].x;
+			mesh.skeleton.bones[modelEyes[n][1]].rotation.y = rightEye[n][2].y;
 
 			if(m == 2) {
 				scene.add(line);
@@ -529,10 +551,10 @@
 			}
 			effect.setViewport(SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2);
 			effect.render(scene, camera4);
-			mesh.skeleton.bones[88].rotation.x = 0;
-			mesh.skeleton.bones[88].rotation.y = 0;
-			mesh.skeleton.bones[86].rotation.x = 0;
-			mesh.skeleton.bones[86].rotation.y = 0;
+			mesh.skeleton.bones[modelEyes[n][0]].rotation.x = 0;
+			mesh.skeleton.bones[modelEyes[n][0]].rotation.y = 0;
+			mesh.skeleton.bones[modelEyes[n][1]].rotation.x = 0;
+			mesh.skeleton.bones[modelEyes[n][1]].rotation.y = 0;
 			if(m == 2) {
 				scene.remove(line);
 			}
@@ -552,10 +574,10 @@
 				}
 			}
 			
-			mesh.skeleton.bones[88].rotation.x = leftEye[n][3].x;
-			mesh.skeleton.bones[88].rotation.y = leftEye[n][3].y;
-			mesh.skeleton.bones[86].rotation.x = rightEye[n][3].x;
-			mesh.skeleton.bones[86].rotation.y = rightEye[n][3].y;
+			mesh.skeleton.bones[modelEyes[n][0]].rotation.x = leftEye[n][3].x;
+			mesh.skeleton.bones[modelEyes[n][0]].rotation.y = leftEye[n][3].y;
+			mesh.skeleton.bones[modelEyes[n][1]].rotation.x = rightEye[n][3].x;
+			mesh.skeleton.bones[modelEyes[n][1]].rotation.y = rightEye[n][3].y;
 
 			if(m == 3) {
 				scene.add(line);
@@ -564,10 +586,10 @@
 			}
 			effect.setViewport(SCREEN_WIDTH / 2 + SCREEN_WIDTH / 4, 0, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2);
 			effect.render(scene, camera5);
-			mesh.skeleton.bones[88].rotation.x = 0;
-			mesh.skeleton.bones[88].rotation.y = 0;
-			mesh.skeleton.bones[86].rotation.x = 0;
-			mesh.skeleton.bones[86].rotation.y = 0;
+			mesh.skeleton.bones[modelEyes[n][0]].rotation.x = 0;
+			mesh.skeleton.bones[modelEyes[n][0]].rotation.y = 0;
+			mesh.skeleton.bones[modelEyes[n][1]].rotation.x = 0;
+			mesh.skeleton.bones[modelEyes[n][1]].rotation.y = 0;
 			if(m == 3) {
 				scene.remove(line);
 			}

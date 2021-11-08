@@ -101,7 +101,7 @@
 		let modelEyes = new Array(3);
 		let line = new Array(3);
 		let data = new Array(3);
-		let fixed;
+		let fixed, lock;
 		for ( let i = 0; i <= 2; i ++) {
 			group[i] = new Array(2);
 			leftEye[i] = new Array(4);
@@ -120,6 +120,18 @@
 			animate();
 
 		});
+
+		function lockClick() {
+
+			lock = true;
+
+		}
+
+		function unlockClick() {
+
+			lock = false;
+
+		}
 
 		function onProgress(xhr) {
 
@@ -147,7 +159,7 @@
 
 		function onClick() {
 
-			fixed = false;
+			if(!lock) fixed = false;
 			//console.log("L");
 
 			//console.log("X = " + mouseWorld.x);
@@ -358,7 +370,7 @@
 				}
 			}
 			fixed = true;
-
+			lock = false;
 
 			const xhr = new XMLHttpRequest();
 			xhr.open('GET', './hw2_data.json', true);
@@ -446,8 +458,9 @@
 				}
 			};
 
-			//line.position.x = -0.525;
-
+			const btn = document.getElementById("info");
+			btn.addEventListener('mouseover', lockClick, false);
+			btn.addEventListener('mouseout', unlockClick, false);
 
 			const container = document.createElement('div');
 			document.body.appendChild(container);
@@ -577,12 +590,12 @@
 
 			if(m == 0) {
 				if(isLeft == true && fixed == false) {
-					leftEye[n][m].x = (mouseWorld.y - height[n]) * -0.5;
-					leftEye[n][m].y = (mouseWorld.x + 0.525) * 0.5;
+					leftEye[n][m].x = (mouseWorld.y - height[n]) * -0.75;
+					leftEye[n][m].y = (mouseWorld.x + 0.525) * 0.75;
 				}
 				else if(isLeft == false && fixed == false) {
-					rightEye[n][m].x = (mouseWorld.y - height[n]) * -0.5;
-					rightEye[n][m].y = (mouseWorld.x - 0.525) * 0.5;
+					rightEye[n][m].x = (mouseWorld.y - height[n]) * -0.75;
+					rightEye[n][m].y = (mouseWorld.x - 0.525) * 0.75;
 				}
 			}
 			
@@ -614,12 +627,12 @@
 
 			if(m == 1) {
 				if(isLeft == true && fixed == false) {
-					leftEye[n][m].x = (mouseWorld.y - height[n]) * -0.5;
-					leftEye[n][m].y = (mouseWorld.x + 0.525) * 0.5;
+					leftEye[n][m].x = (mouseWorld.y - height[n]) * -0.75;
+					leftEye[n][m].y = (mouseWorld.x + 0.525) * 0.75;
 				}
 				else if(isLeft == false && fixed == false) {
-					rightEye[n][m].x = (mouseWorld.y - height[n]) * -0.5;
-					rightEye[n][m].y = (mouseWorld.x - 0.525) * 0.5;
+					rightEye[n][m].x = (mouseWorld.y - height[n]) * -0.75;
+					rightEye[n][m].y = (mouseWorld.x - 0.525) * 0.75;
 				}
 			}
 			
@@ -651,12 +664,12 @@
 
 			if(m == 2) {
 				if(isLeft == true && fixed == false) {
-					leftEye[n][m].x = (mouseWorld.y - height[n]) * -0.5;
-					leftEye[n][m].y = (mouseWorld.x + 0.525) * 0.5;
+					leftEye[n][m].x = (mouseWorld.y - height[n]) * -0.75;
+					leftEye[n][m].y = (mouseWorld.x + 0.525) * 0.75;
 				}
 				else if(isLeft == false && fixed == false) {
-					rightEye[n][m].x = (mouseWorld.y - height[n]) * -0.5;
-					rightEye[n][m].y = (mouseWorld.x - 0.525) * 0.5;
+					rightEye[n][m].x = (mouseWorld.y - height[n]) * -0.75;
+					rightEye[n][m].y = (mouseWorld.x - 0.525) * 0.75;
 				}
 			}
 			
@@ -688,12 +701,12 @@
 
 			if(m == 3) {
 				if(isLeft == true && fixed == false) {
-					leftEye[n][m].x = (mouseWorld.y - height[n]) * -0.5;
-					leftEye[n][m].y = (mouseWorld.x + 0.525) * 0.5;
+					leftEye[n][m].x = (mouseWorld.y - height[n]) * -0.75;
+					leftEye[n][m].y = (mouseWorld.x + 0.525) * 0.75;
 				}
 				else if(isLeft == false && fixed == false) {
-					rightEye[n][m].x = (mouseWorld.y - height[n]) * -0.5;
-					rightEye[n][m].y = (mouseWorld.x - 0.525) * 0.5;
+					rightEye[n][m].x = (mouseWorld.y - height[n]) * -0.75;
+					rightEye[n][m].y = (mouseWorld.x - 0.525) * 0.75;
 				}
 			}
 			
@@ -720,6 +733,7 @@
 			}
 
 		}
+
 	</script>
 
 </body>
